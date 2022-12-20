@@ -5,7 +5,7 @@ A tool to generate passwords using hashing and UUIDv5, written in C#!
 
 ## features:
 - This tool can use both relative paths and absolute paths.
-- This tool does not save your password any where. give it the same account names and secret key and it will generate the same password every time.
+- This tool does not save your password any where. give it the same username, app name, secret key and length and it will generate the same password every time.
 - Generate password for one platform using the prompt.
 - Batch generate passwords for multiple platforms and accounts using cli arguments.
 
