@@ -23,14 +23,15 @@ A tool to generate passwords using hashing and UUIDv5, written in C#!
         - app/platform name
         - master secret key
         - password length
+        - will print to console or not (It will copy the password to the clipboard either way).
 
 - Usage 2:
     - Prepare a file containing your user names and apps using the following format and save it as txt:
-    - ```
-        user1@app1
-        user2@app2
-        user3@app3
-      ```
+    ```
+    user1@app1
+    user2@app2
+    user3@app3
+    ```
     - Example: `rvpx367@github`
     - Run the tool with `--file` or `-f` flag followed by the the path of the file containing the accounts.
     - Run the tool with `--length` or `-l` flag followed by length of the passwords (optional - default=16, min=8, max=32)

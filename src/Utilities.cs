@@ -18,8 +18,8 @@ class Utilities
             if (IsDataValid(data))
             {
                 var dataItem = new InputData();
-                dataItem.userName = data[0];
-                dataItem.appName = data[1];
+                dataItem.userName = data[0].Trim();
+                dataItem.appName = data[1].Trim();
                 dataItem.secretKey = secretKey;
                 dataItem.length = length;
                 dataItem.willPrint = false;

@@ -9,13 +9,13 @@ class IO
     {
         var ioData = new InputData();
         Utilities.ColorCli("Enter your username: ", ConsoleColor.White);
-        ioData.userName = Console.ReadLine();
+        ioData.userName = Console.ReadLine()?.Trim();
 
         Utilities.ColorCli("Enter the app that you want the password for: ", ConsoleColor.White);
-        ioData.appName = Console.ReadLine();
+        ioData.appName = Console.ReadLine()?.Trim();
 
         Utilities.ColorCli("Enter your secret key: ", ConsoleColor.White);
-        ioData.secretKey = HandleSecretKeyInput();
+        ioData.secretKey = HandleSecretKeyInput().Trim();
         Console.WriteLine();
 
         while (true)
@@ -36,7 +36,7 @@ class IO
         while (true)
         {
             Utilities.ColorCli("Password will be copied to the clipboard, do you want to also print it? (y: yes, n: no): ", ConsoleColor.White);
-            var answer = Console.ReadLine()?.ToLower();
+            var answer = Console.ReadLine()?.ToLower().Trim();
             if (answer == "y")
             {
                 ioData.willPrint = true;
