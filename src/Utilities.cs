@@ -39,7 +39,7 @@ class Utilities
             dataToList.Add("");
         }
 
-        await File.WriteAllLinesAsync(Path.Join(parentDir, "pw-gen.txt"), dataToList.ToArray());
+        await File.WriteAllLinesAsync(Path.Join(parentDir, "pwgen_passwords.txt"), dataToList.ToArray());
     }
 
     static bool IsDataValid(string[] data)
