@@ -1,6 +1,6 @@
 using System.Globalization;
-using System.Numerics;
-using DaanV2.UUID;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace PWGEN;
 
@@ -9,73 +9,56 @@ class Generator
     public static string GeneratePassword(InputData inputData)
     {
         inputData.length = Math.Min(32, Math.Max(8, inputData.length));
-        var hash = GenerateMD5Hash($"{inputData.secretKey}", $"{inputData.userName}@{inputData.appName}");
-        var uuid = GenerateUUID(hash);
-        var UUIDToInt = TextHexToInt(uuid, inputData.length);
 
-        var rand = new Random(UUIDToInt);
+        var nameHash = GenerateMD5Hash($"{inputData.userName}@{inputData.appName}");
+        var secretKeyHash = GenerateMD5Hash($"{inputData.secretKey}*{inputData.length}");
+        var shaHash = GenerateSHA256Hash($"{nameHash}+{secretKeyHash}");
+
+        var seed = HexTextToInt(shaHash, inputData.length);
+
+        var rand = new Random(seed);
 
         var LC_ALPHA = Utilities.TextToShuffledArray("abcdefghijklmnopqrstuvwxyz", rand);
         var UC_ALPHA = Utilities.TextToShuffledArray("ABCDEFGHIJKLMNOPQRSTUVWXYZ", rand);
-        var SYMPOLS = Utilities.TextToShuffledArray("@$!%*#?&><)(^-", rand);
+        var SYMBOLS = Utilities.TextToShuffledArray("@$!%*#?&><)(^-", rand);
         var DIGITS = Utilities.TextToShuffledArray("0123456789", rand);
         var ALL_ALPHA = Utilities.TextToShuffledArray("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@$!%*#?&><)(^-0123456789", rand);
+        var choices = new int[] { 0, 1, 2, 3, 4 }.OrderBy(_ => rand.Next()).ToArray();
 
         var password = string.Empty;
 
         for (var i = 0; i < inputData.length; i++)
         {
-            switch (i % 5)
-            {
-                case 0:
-                    password += LC_ALPHA[i % LC_ALPHA.Length];
-                    break;
-                case 1:
-                    password += UC_ALPHA[i % UC_ALPHA.Length];
-                    break;
-                case 2:
-                    password += SYMPOLS[i % SYMPOLS.Length];
-                    break;
-                case 3:
-                    password += DIGITS[i % DIGITS.Length];
-                    break;
-                case 4:
-                    password += ALL_ALPHA[i % ALL_ALPHA.Length];
-                    break;
-            }
+            if (i % 5 == choices[0]) password += LC_ALPHA[i % LC_ALPHA.Length];
+            else if (i % 5 == choices[1]) password += UC_ALPHA[i % UC_ALPHA.Length];
+            else if (i % 5 == choices[2]) password += SYMBOLS[i % SYMBOLS.Length];
+            else if (i % 5 == choices[3]) password += DIGITS[i % DIGITS.Length];
+            else if (i % 5 == choices[4]) password += ALL_ALPHA[i % ALL_ALPHA.Length];
         }
 
         return password;
     }
-    static string GenerateMD5Hash(string secretKey, string name)
+
+    static string GenerateMD5Hash(string text)
     {
-        using (System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create())
-        {
-            var secretKeyBytes = System.Text.Encoding.ASCII.GetBytes(secretKey);
-            var nameBytes = System.Text.Encoding.ASCII.GetBytes(name);
-
-            var secretKeyHash = Convert.ToHexString(md5.ComputeHash(secretKeyBytes));
-            var nameHash = Convert.ToHexString(md5.ComputeHash(nameBytes));
-
-            var masterBytes = System.Text.Encoding.ASCII.GetBytes($"{secretKeyHash}{nameHash}");
-            var masterHash = md5.ComputeHash(masterBytes);
-
-            return Convert.ToHexString(masterHash);
-        }
+        var textBytes = Encoding.ASCII.GetBytes(text);
+        var hash = Convert.ToHexString(MD5.Create().ComputeHash(textBytes));
+        return hash;
     }
 
-    static string GenerateUUID(string hash)
+    static string GenerateSHA256Hash(string text)
     {
-        var generatedUUID = UUIDFactory.CreateUUID(5, 1, hash).ToString().Replace("-", "");
-        return generatedUUID;
+        var textBytes = Encoding.ASCII.GetBytes(text);
+        var hash = Convert.ToHexString(SHA256.Create().ComputeHash(textBytes));
+        return hash;
     }
 
-    static int TextHexToInt(string hexText, int length)
+    static int HexTextToInt(string hexText, int length)
     {
-        var bigNum = BigInteger.Parse($"0{hexText}", NumberStyles.AllowHexSpecifier);
         var rand = new Random(length);
-        var numToStringArray = bigNum.ToString().ToCharArray().Select(c => c.ToString());
-        var numToString = string.Join("", numToStringArray.OrderBy(_ => rand.Next()).ToArray()).Substring(0, 9);
-        return int.Parse(numToString);
+        var shuffledTextArray = new string[8];
+        Array.Copy(Utilities.TextToShuffledArray(hexText, rand), shuffledTextArray, 8);
+        var shuffledText = string.Join("", shuffledTextArray);
+        return int.Parse(shuffledText.Substring(0, 8), NumberStyles.AllowHexSpecifier);
     }
 }

@@ -35,7 +35,8 @@ class IO
 
         while (true)
         {
-            Utilities.ColorCli("Password will be copied to the clipboard, do you want to also print it? (y: yes, n: no): ", ConsoleColor.White);
+            Utilities.ColorCli("Password will be copied to the clipboard.\n", ConsoleColor.White);
+            Utilities.ColorCli("Do you want to also print it? (y: yes, n: no): ", ConsoleColor.White);
             var answer = Console.ReadLine()?.ToLower().Trim();
             if (answer == "y")
             {
