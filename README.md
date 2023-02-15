@@ -1,6 +1,6 @@
 # **Password Generator**
 
-A tool to generate passwords using hashing and UUIDv5, written in C#!
+A tool to generate secure, deterministic, random passwords, written in C#!
 ##### THIS TOOL DOES NOT SAVE OR SEND ANY DATA OUT OF YOUR COMPUTER. CHECK THE SOURCE CODE TO MAKE SURE!
 
 ## features:
